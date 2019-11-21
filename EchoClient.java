@@ -5,30 +5,26 @@
  * @author - Greg Gagne
  */
 
-
-/***
- * Modified by Daniel Lier for Computer Networks HW2
-*/
-
 import java.net.*;
-import java.util.Scanner;
 import java.io.*;
 
 public class EchoClient
 {
-	public static final int DEFAULT_PORT = 1337;			// changed the port here
+	public static final int DEFAULT_PORT = 6007;
 	
 	public static void main(String[] args) throws IOException {
+		if (args.length != 1) {
+			System.err.println("Usage: java EchoClient <echo server>");
+			System.exit(0);
+		}
 		
 		BufferedReader networkBin = null;	// the reader from the network
 		PrintWriter networkPout = null;		// the writer to the network
 		BufferedReader localBin = null;		// the reader from the local keyboard
 		Socket sock = null;			// the socket
-		String message;
 		
 		try {
-			sock = new Socket("localhost", DEFAULT_PORT);
-			message = args[0];								//set addr to second arg, this will be sent to the sever to be converted to an IP address
+			sock = new Socket(args[0], DEFAULT_PORT);
 			
 			// set up the necessary communication channels
 			networkBin = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -42,13 +38,20 @@ public class EchoClient
 			networkPout = new PrintWriter(sock.getOutputStream(),true);
 			
 			/**
-			 * Read from the string and send it to the echo server.
+			 * Read from the keyboard and send it to the echo server.
+			 * Quit reading when the client enters a period "."
 			 */
-				String line = message;						
-				networkPout.println(line);					//send addr to client
-				System.out.println("Server: " + networkBin.readLine()); //print client response
-
-		}	
+			boolean done = false;
+			while (!done) {
+				String line = localBin.readLine();
+				if (line.equals("."))
+					done = true;
+				else {
+					networkPout.println(line);
+					System.out.println("Server: " + networkBin.readLine());
+				}
+			}
+		}
 		catch (IOException ioe) {
 			System.err.println(ioe);
 		}
