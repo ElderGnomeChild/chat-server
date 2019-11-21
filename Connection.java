@@ -20,22 +20,26 @@ public class Connection implements Runnable
 
 	public void process(Socket client) throws java.io.IOException {
 		byte[] buffer = new byte[BUFFER_SIZE];
-		InputStream  fromClient = null;
+		BufferedReader fromClient = null;
 		OutputStream toClient = null;
+		String username = "";
 		
 		try {
 			/**
 			 * get the input and output streams associated with the socket.
 			 */
-			fromClient = new BufferedInputStream(client.getInputStream());
+			fromClient = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			toClient = new BufferedOutputStream(client.getOutputStream());
 			int numBytes;
 			
-			/** continually loop until the client closes the connection */
-			while ( (numBytes = fromClient.read(buffer)) != -1) {
-				toClient.write(buffer,0,numBytes);
-				toClient.flush();
-			}
+			username += fromClient.readLine();
+
+			System.out.println(username);
+
+			/* TODO: USE ARRAYLIST TO KEEP TRACK OF CONNECTIONS
+				*  ADD TO ARRAYLIST WHEN SOMEONE JOINS
+				*  REMOVE FROM ARRAYLIST WHEN SOMEONE LEAVES
+			*/
    		}
 		catch (IOException ioe) {
 			System.err.println(ioe);
