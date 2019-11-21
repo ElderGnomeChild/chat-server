@@ -39,7 +39,9 @@ public class Connection implements Runnable
 			fromClient = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			toClient = new BufferedOutputStream(client.getOutputStream());
 			
-			String getLine = fromClient.readLine();									//get the first line of the data sent from the client
+			String getLine = fromClient.readLine();		
+			System.out.println(getLine);
+			//get the first line of the data sent from the client
 			
 
             // byte[] contents = new byte[BUFFER_SIZE];							//send the file to the client

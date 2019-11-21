@@ -18,20 +18,16 @@ public class EchoClient
 	public static final int DEFAULT_PORT = 1337;			// changed the port here
 	
 	public static void main(String[] args) throws IOException {
-		if (args.length != 2) {
-			System.err.println("Usage: java EchoClient <echo server> <DNS lookup>");
-			System.exit(0);
-		}
 		
 		BufferedReader networkBin = null;	// the reader from the network
 		PrintWriter networkPout = null;		// the writer to the network
 		BufferedReader localBin = null;		// the reader from the local keyboard
 		Socket sock = null;			// the socket
-		String addr;
+		String message;
 		
 		try {
-			sock = new Socket(args[0], DEFAULT_PORT);
-			addr = args[1];								//set addr to second arg, this will be sent to the sever to be converted to an IP address
+			sock = new Socket("localhost", DEFAULT_PORT);
+			message = args[0];								//set addr to second arg, this will be sent to the sever to be converted to an IP address
 			
 			// set up the necessary communication channels
 			networkBin = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -47,7 +43,7 @@ public class EchoClient
 			/**
 			 * Read from the string and send it to the echo server.
 			 */
-				String line = addr;						
+				String line = message;						
 				networkPout.println(line);					//send addr to client
 				System.out.println("Server: " + networkBin.readLine()); //print client response
 		}
