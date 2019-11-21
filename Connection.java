@@ -38,10 +38,11 @@ public class Connection implements Runnable
 		try {
 			fromClient = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			toClient = new BufferedOutputStream(client.getOutputStream());
-			
-			String getLine = fromClient.readLine();									//get the first line of the data sent from the client
-			
-
+            
+            while(true) {
+                String getLine = fromClient.readLine();									//get the first line of the data sent from the client
+                System.out.println(getLine);
+            }
             // byte[] contents = new byte[BUFFER_SIZE];							//send the file to the client
             // int length;
             // while ((length = fromFile.read(contents)) > 0) {

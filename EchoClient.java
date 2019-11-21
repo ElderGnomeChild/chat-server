@@ -11,6 +11,7 @@
 */
 
 import java.net.*;
+import java.util.Scanner;
 import java.io.*;
 
 public class EchoClient
@@ -18,8 +19,8 @@ public class EchoClient
 	public static final int DEFAULT_PORT = 1337;			// changed the port here
 	
 	public static void main(String[] args) throws IOException {
-		if (args.length != 2) {
-			System.err.println("Usage: java EchoClient <echo server> <DNS lookup>");
+		if (args.length != 1) {
+			System.err.println("Usage: java EchoClient <echo server>");
 			System.exit(0);
 		}
 		
@@ -28,10 +29,11 @@ public class EchoClient
 		BufferedReader localBin = null;		// the reader from the local keyboard
 		Socket sock = null;			// the socket
 		String addr;
+		Scanner keyboard = new Scanner(System.in);
 		
 		try {
 			sock = new Socket(args[0], DEFAULT_PORT);
-			addr = args[1];								//set addr to second arg, this will be sent to the sever to be converted to an IP address
+			// addr = args[1];								//set addr to second arg, this will be sent to the sever to be converted to an IP address
 			
 			// set up the necessary communication channels
 			networkBin = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -47,10 +49,14 @@ public class EchoClient
 			/**
 			 * Read from the string and send it to the echo server.
 			 */
-				String line = addr;						
+				// String line = addr;	
+			while(true) {
+				String line = keyboard.nextLine();
+				System.out.println(line);					
 				networkPout.println(line);					//send addr to client
 				System.out.println("Server: " + networkBin.readLine()); //print client response
-		}
+			}
+		}	
 		catch (IOException ioe) {
 			System.err.println(ioe);
 		}
