@@ -11,6 +11,7 @@
 */
 
 import java.net.*;
+import java.util.Scanner;
 import java.io.*;
 
 public class EchoClient
@@ -46,7 +47,8 @@ public class EchoClient
 				String line = message;						
 				networkPout.println(line);					//send addr to client
 				System.out.println("Server: " + networkBin.readLine()); //print client response
-		}
+			}
+		}	
 		catch (IOException ioe) {
 			System.err.println(ioe);
 		}
