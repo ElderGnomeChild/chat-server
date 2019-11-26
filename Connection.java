@@ -29,6 +29,16 @@ public class Connection implements Runnable
 			
 			username += fromClient.readLine();
 			this.username = username;
+
+			/* TODO: USE ARRAYLIST TO KEEP TRACK OF CONNECTIONS
+				*  ADD TO ARRAYLIST WHEN SOMEONE JOINS
+				*  REMOVE FROM ARRAYLIST WHEN SOMEONE LEAVES
+			*/
+
+			while(true) {
+				String line = fromClient.readLine();
+				System.out.println(line);
+			}
    		}
 		catch (IOException ioe) {
 			System.err.println(ioe);
