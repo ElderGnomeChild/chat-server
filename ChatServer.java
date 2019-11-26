@@ -1,17 +1,10 @@
 /**
- * An echo server listening on port 6007. 
- * This server reads from the client
- * and echoes back the result. 
- *
- * This services each request in a separate thread.
- *
- * This conforms to RFC 862 for echo servers.
- *
- * @author - Greg Gagne.
+ * @author - Daniel Lier and Preston McIllece.
  */
 
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.concurrent.*;
 
 public class ChatServer
@@ -20,6 +13,7 @@ public class ChatServer
 
     // construct a thread pool for concurrency	
 	private static final Executor exec = Executors.newCachedThreadPool();
+	private static ArrayList currentConnections = new ArrayList<>();
 	
 	public static void main(String[] args) throws IOException {
 		ServerSocket sock = null;
@@ -29,11 +23,9 @@ public class ChatServer
 			sock = new ServerSocket(DEFAULT_PORT);
 			
 			while (true) {
-				/**
-				 * now listen for connections
-				 * and service the connection in a separate thread.
-				 */
 				Runnable task = new Connection(sock.accept());
+				currentConnections.add(task);
+				
 				exec.execute(task);
 			}
 		}

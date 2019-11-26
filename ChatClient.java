@@ -1,8 +1,5 @@
 /**
- * An echo client. The client enters data to the server, and the
- * server echoes the data back to the client.
- *
- * @author - Greg Gagne
+ * @author - Daniel Lier and Preston McIllece.
  */
 
 import java.net.*;
