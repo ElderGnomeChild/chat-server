@@ -13,8 +13,8 @@ public class ChatServer
 
     // construct a thread pool for concurrency	
 	private static final Executor exec = Executors.newCachedThreadPool();
-	private static ArrayList currentConnections = new ArrayList<>();
-	
+	private static Handler handler = new Handler();
+
 	public static void main(String[] args) throws IOException {
 		ServerSocket sock = null;
 		
@@ -23,9 +23,9 @@ public class ChatServer
 			sock = new ServerSocket(DEFAULT_PORT);
 			
 			while (true) {
-				Runnable task = new Connection(sock.accept());
-				currentConnections.add(task);
-				
+				Connection task = new Connection(sock.accept());
+				handler.addConnection(task);
+				handler.printEverything();
 				exec.execute(task);
 			}
 		}
