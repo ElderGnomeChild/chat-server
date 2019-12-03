@@ -16,6 +16,7 @@ public class Handler {
         for (Object runnable: currentConnections) {
             System.out.println(runnable.toString());
         }
+        System.out.println("--------------------");
     }
 
     public void broadcastMessage(String message) throws IOException {
