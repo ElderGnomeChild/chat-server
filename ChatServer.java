@@ -5,6 +5,7 @@
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 import java.util.concurrent.*;
 
@@ -18,6 +19,7 @@ public class ChatServer
 	public static Vector messages = new Vector<String>();
 	public static ArrayList outputStreams = new ArrayList<OutputStream>();
 	public static BroadcastThread broadcastThread = new BroadcastThread(messages, outputStreams);
+	public static HashMap usernameDictionary = new HashMap<>(50);
 
 	public static void main(String[] args) throws IOException {
 		ServerSocket sock = null;
@@ -28,7 +30,7 @@ public class ChatServer
 			
 			exec.execute(broadcastThread);
 			while (true) {
-				Connection task = new Connection(sock.accept(), messages, outputStreams);
+				Connection task = new Connection(sock.accept(), messages, outputStreams, usernameDictionary);
 				exec.execute(task);
 			}
 		}

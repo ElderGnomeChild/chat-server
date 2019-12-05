@@ -17,9 +17,6 @@ public class BroadcastThread implements Runnable {
     public void process() {
         PrintWriter pw = null;
         while (true) {
-            // sleep for 1/10th of a second
-            // try {
-                // Thread.sleep(100);
                 if (!messages.isEmpty()){
                     String message = messages.remove(0);
                     System.out.println(message);
@@ -27,26 +24,12 @@ public class BroadcastThread implements Runnable {
 
                     for(OutputStream stream : outputStreams) {
                         pw = new PrintWriter(stream);
-                        // System.out.println(stream);
-                        // System.out.println(pw);
-                        // System.out.println("message: " + message);
-                        // pw.write(message.getBytes());
                         pw.println(message);
                         pw.flush();
                     }
                 }
-
-            // } catch () {
-            //     System.out.println(ignore);
-            // }
-
-            /**
-             * check if there are any messages in the Vector. If so, remove them
-             * and broadcast the messages to the chatroom
-             */
         }
     }
-
 
 
     public void run() {

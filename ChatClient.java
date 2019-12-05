@@ -23,11 +23,10 @@ public class ChatClient
 		BufferedReader localBin = null;		// the reader from the local keyboard
 		Socket sock = null;			// the socket
 		ReaderThread reader = null;
+		BufferedReader listeningForStatusCode = null;
 		
 		try {
 			sock = new Socket(args[0], DEFAULT_PORT);
-			reader = new ReaderThread(sock);
-			exec.execute(reader);
 			
 			// set up the necessary communication channels
 			// networkBin = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -48,7 +47,16 @@ public class ChatClient
 			String name = localBin.readLine();
 			name = "JOIN|" + name + "|all|date|\r\n" + name + "\r\n";
 			networkPout.println(name);
-
+			
+			
+			listeningForStatusCode = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+			String statusCode = listeningForStatusCode.readLine();
+			System.out.println("here??");
+			System.out.println("stat" + statusCode);
+			
+			reader = new ReaderThread(sock);
+			exec.execute(reader);
+			
 
 
 			boolean done = false;
