@@ -4,40 +4,41 @@
 
 import java.net.*;
 import java.io.*;
+import java.util.Vector;
+import java.util.ArrayList;
 
 public class Connection implements Runnable
 {
 	private Socket client;
 	private String username;
+	private Vector messages;
+	private ArrayList outputStreams;
 	
-	public Connection(Socket client) {
+	public Connection(Socket client, Vector vector, ArrayList arrayList) {
 		this.client = client;
 		this.username = "";
-	}
-
-	public Connection(Socket client, String username) {
-		this.client = client;
-		this.username = username;
+		this.messages = vector;
+		this.outputStreams = arrayList;
 	}
 
 	public void process(Socket client) throws java.io.IOException {
 		BufferedReader fromClient = null;
 		String username = "";
+		BufferedOutputStream toClient = null;
 		
 		try {
 			fromClient = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			
 			username += fromClient.readLine();
 			this.username = username;
-
-			/* TODO: USE ARRAYLIST TO KEEP TRACK OF CONNECTIONS
-				*  ADD TO ARRAYLIST WHEN SOMEONE JOINS
-				*  REMOVE FROM ARRAYLIST WHEN SOMEONE LEAVES
-			*/
-
+			
+			toClient = new BufferedOutputStream(client.getOutputStream());
+			outputStreams.add(toClient);
 			while(true) {
 				String line = fromClient.readLine();
-				System.out.println(line);
+				messages.add(line);
+				// System.out.println(line);
+				// System.out.println(messages);
 			}
    		}
 		catch (IOException ioe) {
@@ -61,20 +62,6 @@ public class Connection implements Runnable
 		String clientString = this.client.toString();
 		String returnValue = clientString.concat(this.username);
 		return returnValue;
-	}
-
-	public void sendMessage(String message) throws IOException {
-		BufferedOutputStream toClient = null;
-		byte[] buffer = new byte[1024];
-		try {
-			toClient = new BufferedOutputStream(client.getOutputStream());
-			int numBytes;
-			toClient.write(message.getBytes());
-
-		} catch (IOException ioe) {
-			System.out.println(ioe);
-		}
-
 	}
 }
 
