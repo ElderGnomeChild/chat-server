@@ -3,11 +3,14 @@
  */
 
 import java.net.*;
+import java.util.concurrent.*;
 import java.io.*;
+import java.util.*;
 
 public class ChatClient
 {
 	public static final int DEFAULT_PORT = 1337;
+	private static final Executor exec = Executors.newCachedThreadPool();
 	
 	public static void main(String[] args) throws IOException {
 		if (args.length != 1) {
@@ -15,16 +18,19 @@ public class ChatClient
 			System.exit(0);
 		}
 		
-		BufferedReader networkBin = null;	// the reader from the network
+		// BufferedReader networkBin = null;	// the reader from the network
 		PrintWriter networkPout = null;		// the writer to the network
 		BufferedReader localBin = null;		// the reader from the local keyboard
 		Socket sock = null;			// the socket
+		ReaderThread reader = null;
 		
 		try {
 			sock = new Socket(args[0], DEFAULT_PORT);
+			reader = new ReaderThread(sock);
+			exec.execute(reader);
 			
 			// set up the necessary communication channels
-			networkBin = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+			// networkBin = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 			localBin = new BufferedReader(new InputStreamReader(System.in));
 			
 			/**
@@ -60,8 +66,8 @@ public class ChatClient
 			System.err.println(ioe);
 		}
 		finally {
-			if (networkBin != null)
-				networkBin.close();
+			// if (networkBin != null)
+			// 	networkBin.close();
 			if (localBin != null)
 				localBin.close();
 			if (networkPout != null)

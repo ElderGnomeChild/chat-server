@@ -24,7 +24,8 @@ public class Connection implements Runnable
 	public void process(Socket client) throws java.io.IOException {
 		BufferedReader fromClient = null;
 		String username = "";
-		BufferedOutputStream toClient = null;
+		// BufferedOutputStream toClient = null;
+		// PrintWriter toClient = null;
 		
 		try {
 			fromClient = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -32,8 +33,10 @@ public class Connection implements Runnable
 			username += fromClient.readLine();
 			this.username = username;
 			
-			toClient = new BufferedOutputStream(client.getOutputStream());
-			outputStreams.add(toClient);
+			// toClient = new BufferedOutputStream(client.getOutputStream());
+			// toClient= new PrintWriter(client.getOutputStream());
+
+			outputStreams.add(client.getOutputStream());
 			while(true) {
 				String line = fromClient.readLine();
 				messages.add(line);

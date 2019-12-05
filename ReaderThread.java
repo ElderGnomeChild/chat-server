@@ -20,7 +20,10 @@ public class ReaderThread implements Runnable
 			fromServer = new BufferedReader(new InputStreamReader(server.getInputStream()));
 
 			while (true) {
+				// System.out.println("receiving");
 				String message = fromServer.readLine();
+				System.out.println(message);
+				// System.out.println("got it");
 			}
 		}
 		catch (IOException ioe) { System.out.println(ioe); }
