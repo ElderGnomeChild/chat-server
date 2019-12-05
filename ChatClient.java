@@ -45,6 +45,12 @@ public class ChatClient
 			 * Quit reading when the client enters a period "."
 			 */
 			System.out.println("Enter a username:");
+			String name = localBin.readLine();
+			name = "JOIN|" + name + "|all|date|\r\n" + name + "\r\n";
+			networkPout.println(name);
+
+
+
 			boolean done = false;
 			while (!done) {
 				String line = localBin.readLine();

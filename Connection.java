@@ -31,7 +31,11 @@ public class Connection implements Runnable
 			fromClient = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			
 			username += fromClient.readLine();
-			this.username = username;
+			System.out.println("raw: " + username);
+			String statusCode = this.join(username);
+			System.out.println("username: " + this.username);
+			System.out.println("status: " + statusCode);
+			fromClient.readLine();
 			
 			// toClient = new BufferedOutputStream(client.getOutputStream());
 			// toClient= new PrintWriter(client.getOutputStream());
@@ -65,6 +69,27 @@ public class Connection implements Runnable
 		String clientString = this.client.toString();
 		String returnValue = clientString.concat(this.username);
 		return returnValue;
+	}
+
+
+	public String join(String raw) {
+		String[] delims = raw.split("\\|");
+		// for (String split : delims) {
+		// 	System.out.println(split);
+		// }
+		if (delims[0].equals("JOIN")) {
+			if (delims[1].length() <= 15) {
+				this.username = delims[1];
+				return "STAT|200";
+			}
+			else {return "STAT|400";}
+		}
+
+		else {
+			return "STAT|400";
+		}
+
+		// return "yuh";
 	}
 }
 
