@@ -46,7 +46,12 @@ public class Connection implements Runnable
 				client.close();
 			}
 			
+			boolean j = true;
 			while(true) {
+				if (j) {
+					messages.add(username);
+					j= false;
+				}
 				String line = fromClient.readLine();
 				messages.add(line);
 				// System.out.println(line);
