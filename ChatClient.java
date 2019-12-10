@@ -18,6 +18,13 @@ public class ChatClient
 	}
 
 
+
+	private static String broadcast(String name) {
+		String date = "date";
+		return "BDMG|" + name + "|all|" + date;
+	}
+
+
 	public static void main(String[] args) throws IOException {
 		if (args.length != 1) {
 			System.err.println("Usage: java EchoClient <echo server>");
@@ -57,11 +64,13 @@ public class ChatClient
 				
 				boolean done = false;
 				while (!done) {
-					String line = localBin.readLine();
+					String line2 = localBin.readLine();
+					String line = broadcast(name);
 					if (line.equals("."))
 						done = true;
 					else {
 						networkPout.println(line);
+						networkPout.println(line2);
 					}
 				}
 			}

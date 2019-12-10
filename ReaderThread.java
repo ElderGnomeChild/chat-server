@@ -22,10 +22,6 @@ public class ReaderThread implements Runnable
 			while (true) {
 				String message = fromServer.readLine();
 				message = parse(message);
-
-
-
-
 				System.out.println(message);
 			}
 		}
@@ -36,9 +32,18 @@ public class ReaderThread implements Runnable
 	private String parse(String message) {
 		if (message.contains("|")) {
 			String[] delims = message.split("\\|");
+			// System.out.println("del: " + delims[0]);
 			
 			if (delims[0].equals("JOIN")) {
 				return delims[1] + " has joined the chat.";
+			}
+
+			if (delims[0].equals("BDMG")) {
+				try {
+				String msg = fromServer.readLine();
+				// System.out.println("msg: "+msg);
+				return delims[1] + ": " + msg;
+				} catch(IOException ioe) { System.out.println(ioe); }
 			}
 			
 			return message;
