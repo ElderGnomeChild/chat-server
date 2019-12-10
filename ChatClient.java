@@ -3,6 +3,12 @@
  */
 
 import java.net.*;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.LocalDate;
 import java.util.concurrent.*;
 import java.io.*;
 import java.util.*;
@@ -17,11 +23,17 @@ public class ChatClient
 		return Integer.parseInt(statusCode.substring(statusCode.indexOf("|") + 1));
 	}
 
+	private static String parseDate(Date uglyDate) {
+		Instant instant = uglyDate.toInstant();
+		LocalDateTime ldt = instant.atOffset(ZoneOffset.UTC).toLocalDateTime();
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyy-MM-dd-HH-mm-ss");
+		return ldt.format(timeFormatter);
+	}
 
 
 	private static String broadcast(String name) {
-		String date = "date";
-		return "BDMG|" + name + "|all|" + date;
+		Date date = new Date();
+		return "BDMG|" + name + "|all|" + parseDate(date);
 	}
 
 
@@ -48,7 +60,9 @@ public class ChatClient
 			 */
 			System.out.println("Enter a username:");
 			String name = localBin.readLine();
-			String joinString = "JOIN|" + name + "|all|date|\r\n" + name + "\r\n";
+			Date date = new Date();
+
+			String joinString = "JOIN|" + name + "|all|" + parseDate(date) + "\r\n" + name + "\r\n";
 			networkPout.println(joinString);
 			
 			
