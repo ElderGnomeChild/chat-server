@@ -76,7 +76,6 @@ public class Connection implements Runnable
 		return returnValue;
 	}
 	
-	
 	public String join(String raw) throws IOException {
 		String[] delims = raw.split("\\|");
 		try {
