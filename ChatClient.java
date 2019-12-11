@@ -17,6 +17,8 @@ public class ChatClient
 {
 	public static final int DEFAULT_PORT = 1337;
 	private static final Executor exec = Executors.newCachedThreadPool();
+	private static BufferedReader localBin = null;		// the reader from the local keyboard
+	private static String userName = "";
 	
 
 	private static int parseStatusCode(String statusCode) {
@@ -30,10 +32,20 @@ public class ChatClient
 		return ldt.format(timeFormatter);
 	}
 
-
 	private static String broadcast(String name) {
 		Date date = new Date();
 		return "BDMG|" + name + "|all|" + parseDate(date);
+	}
+
+	private static String retrieveUsername() throws IOException {
+		try {
+			System.out.println("Enter a username:");
+			return localBin.readLine();
+		}
+		catch (IOException ioe) {
+			System.err.println(ioe);
+			return "";
+		}
 	}
 
 
@@ -44,7 +56,6 @@ public class ChatClient
 		}
 		
 		PrintWriter networkPout = null;		// the writer to the network
-		BufferedReader localBin = null;		// the reader from the local keyboard
 		Socket sock = null;			// the socket
 		ReaderThread reader = null;
 		BufferedReader listeningForStatusCode = null;
@@ -58,30 +69,38 @@ public class ChatClient
 			 * Read from the keyboard and send it to the echo server.
 			 * Quit reading when the client enters a period "."
 			 */
-			System.out.println("Enter a username:");
-			String name = localBin.readLine();
+			userName = retrieveUsername();
 			Date date = new Date();
+			boolean stupidUserName = true;
 
-			String joinString = "JOIN|" + name + "|all|" + parseDate(date) + "\r\n" + name + "\r\n";
+			while (stupidUserName) {
+				if (userName.contains("|")) {
+					System.out.println("Your username cannot contain '|'. Please try again.\r\n");
+					userName = retrieveUsername();
+				}
+				else {
+					stupidUserName = false;
+				}
+			}
+			String joinString = "JOIN|" + userName + "|all|" + parseDate(date) + "\r\n" + userName + "\r\n";
 			networkPout.println(joinString);
 			
 			
 			listeningForStatusCode = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 			String statusCode = listeningForStatusCode.readLine();
 			int statusCodeNumber = parseStatusCode(statusCode);
-
 			if (statusCodeNumber == 200) {
-				System.out.println("Welcome " + name + "!");
+				System.out.println("Welcome " + userName + "!");
 
 				reader = new ReaderThread(sock);
 				exec.execute(reader);
 				
-				boolean done = false;
-				while (!done) {
+				boolean isLeaving = false;
+				while (!isLeaving) {
 					String line2 = localBin.readLine();
-					String line = broadcast(name);
+					String line = broadcast(userName);
 					if (line.equals("."))
-						done = true;
+						isLeaving = true;
 					else {
 						networkPout.println(line);
 						networkPout.println(line2);
@@ -89,17 +108,16 @@ public class ChatClient
 				}
 			}
 			else if (statusCodeNumber == 420) {
-				if (name.length() > 15) {
+				if (userName.length() > 15) {
 					System.out.println("\r\nSorry, your username must be 15 characters or fewer! \r\nPlease try again!");
 				}
 				else {
-					System.out.println("\r\nSorry the username \"" + name + "\" is already taken! \r\nPlease try again!");
+					System.out.println("\r\nSorry the username \"" + userName + "\" is already taken! \r\nPlease try again!");
 				}
 			}
 			else {
 				System.out.println("We have no clue what happened. Please contact server owner.");
 			}
-
 		}
 		catch (IOException ioe) {
 			System.err.println(ioe);
