@@ -87,10 +87,10 @@ public class ChatClient
 			userName = retrieveUsername();
 			Date date = new Date();
 			boolean stupidUserName = true;
-
+			String regex = "^[a-zA-Z0-9_$^`; -]*$";
 			while (stupidUserName) {
-				if (userName.contains("|")) {
-					System.out.println("Your username cannot contain '|'. Please try again.\r\n");
+				if (userName.contains("|") || !userName.matches(regex)) {
+					System.out.println("Your username cannot contain '|' or other non-sensible symbols. Please try again.\r\n");
 					userName = retrieveUsername();
 				}
 				else {
@@ -112,20 +112,24 @@ public class ChatClient
 					String line2 = localBin.readLine();
 					String line = "";
 					Character at = '@';
-					if (at.equals(line2.charAt(0))){
-						String destinationUser = line2.substring(1, line2.indexOf(" "));
-						line = privateMessage(userName, destinationUser);
-					}
-					else {line = broadcast(userName);}
-					if (line2.equals(".")){
-						System.out.println("here?");
-						isLeaving = true;
-						line = leave(userName);
-						networkPout.println(line);
+					if (line2.length() < 513){
+						if (at.equals(line2.charAt(0))){
+							String destinationUser = line2.substring(1, line2.indexOf(" "));
+							line = privateMessage(userName, destinationUser);
+						}
+						else {line = broadcast(userName);}
+						if (line2.equals(".")){
+							isLeaving = true;
+							line = leave(userName);
+							networkPout.println(line);
+						}
+						else {
+							networkPout.println(line);
+							networkPout.println(line2);
+						}
 					}
 					else {
-						networkPout.println(line);
-						networkPout.println(line2);
+						System.out.println("Relax bro, your message is too long. Tone it down please.✋");
 					}
 				}
 			}

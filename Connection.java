@@ -34,12 +34,10 @@ public class Connection implements Runnable
 			fromClient = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			
 			username += fromClient.readLine();
-			System.out.println("raw: " + username);
 			String statusCode = this.parse(username, fromClient);
 			fromClient.readLine();
 			
 			printWriter = new PrintWriter(this.client.getOutputStream());
-			System.out.println("status: " + statusCode);
 			printWriter.println(statusCode);
 			printWriter.flush();
 
@@ -61,17 +59,13 @@ public class Connection implements Runnable
 				
 				if (status.length() > 0 && !status.equals("leaving")) {	
 					printWriter.println(status);
-					System.out.println("status:: " +status);
 					printWriter.flush();
 				}
 
 				if (this.broadcast) {
-					System.out.println("line: "+line);
 					messages.add(line);
 				}
 				this.broadcast = true;
-				// System.out.println(line);
-				// System.out.println(messages);
 
 				if (status.equals("leaving")) {
 					if (fromClient != null)
@@ -97,7 +91,7 @@ public class Connection implements Runnable
 		try {
 			process(client);
 		} catch(IOException ioe) {
-			System.out.println(ioe);
+			System.err.println(ioe);
 		}
 	}
 	

@@ -13,14 +13,11 @@ public class BroadcastThread implements Runnable {
         this.outputStreams = arrayList;
     }
 
-
     public void process() {
         PrintWriter pw = null;
         while (true) {
                 if (!messages.isEmpty()){
                     String message = messages.remove(0);
-                    System.out.println("(Broadcast Thread)" + message);
-
 
                     for(OutputStream stream : outputStreams) {
                         pw = new PrintWriter(stream);
@@ -30,7 +27,6 @@ public class BroadcastThread implements Runnable {
                 }
         }
     }
-
 
     public void run() {
         while (true) {

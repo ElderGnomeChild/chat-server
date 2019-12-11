@@ -25,7 +25,7 @@ public class ReaderThread implements Runnable
 				System.out.println(message);
 			}
 		}
-		catch (IOException ioe) { System.out.println(ioe); }
+		catch (IOException ioe) { System.err.println(ioe); }
 
 	}
 
@@ -39,7 +39,7 @@ public class ReaderThread implements Runnable
 				try {
 				String msg = fromServer.readLine();
 				return delims[1] + ": " + msg;
-				} catch(IOException ioe) { System.out.println(ioe); }
+				} catch(IOException ioe) { System.err.println(ioe); }
 			}
 			else if (delims[0].equals("PVMG")){
 				try {
@@ -47,7 +47,7 @@ public class ReaderThread implements Runnable
 					String msg = line.substring(line.indexOf(" ") + 1);
 
 					return delims[1] + "(private)🍑 : " + msg;
-					} catch(IOException ioe) { System.out.println(ioe); }
+					} catch(IOException ioe) { System.err.println(ioe); }
 			}
 			else if (delims[0].equals("STAT")) {
 				if (delims[1].equals("421")) {
