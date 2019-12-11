@@ -38,9 +38,16 @@ public class ReaderThread implements Runnable
 			else if (delims[0].equals("BDMG")) {
 				try {
 				String msg = fromServer.readLine();
-				// System.out.println("msg: "+msg);
 				return delims[1] + ": " + msg;
 				} catch(IOException ioe) { System.out.println(ioe); }
+			}
+			else if (delims[0].equals("PVMG")){
+				try {
+					String line = fromServer.readLine();
+					String msg = line.substring(line.indexOf(" ") + 1);
+
+					return delims[1] + " (private): " + msg;
+					} catch(IOException ioe) { System.out.println(ioe); }
 			}
 			
 			return message;

@@ -36,6 +36,11 @@ public class ChatClient
 		Date date = new Date();
 		return "BDMG|" + name + "|all|" + parseDate(date);
 	}
+	
+	private static String privateMessage(String name, String destination) {
+		Date date = new Date();
+		return "PVMG|" + name + "|" + destination + "|" + parseDate(date);
+	}
 
 	private static String retrieveUsername() throws IOException {
 		try {
@@ -98,8 +103,14 @@ public class ChatClient
 				boolean isLeaving = false;
 				while (!isLeaving) {
 					String line2 = localBin.readLine();
-					String line = broadcast(userName);
-					if (line.equals("."))
+					String line = "";
+					Character at = '@';
+					if (at.equals(line2.charAt(0))){
+						String destinationUser = line2.substring(1, line2.indexOf(" "));
+						line = privateMessage(userName, destinationUser);
+					}
+					else {line = broadcast(userName);}
+					if (line2.equals("."))
 						isLeaving = true;
 					else {
 						networkPout.println(line);
