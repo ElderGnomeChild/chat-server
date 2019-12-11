@@ -19,7 +19,7 @@ public class ChatServer
 	public static Vector messages = new Vector<String>();
 	public static ArrayList outputStreams = new ArrayList<OutputStream>();
 	public static BroadcastThread broadcastThread = new BroadcastThread(messages, outputStreams);
-	public static HashMap usernameDictionary = new HashMap<>(50);
+	public static HashMap<String, OutputStream> usernameDictionary = new HashMap<>(50);
 
 	public static void main(String[] args) throws IOException {
 		ServerSocket sock = null;

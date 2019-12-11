@@ -14,7 +14,8 @@ public class Connection implements Runnable
 	private String username;
 	private Vector messages;
 	private ArrayList outputStreams;
-	private HashMap usernameDictionary;
+	private HashMap<String, OutputStream> usernameDictionary;
+	private boolean broadcast = true;
 	
 	public Connection(Socket client, Vector vector, ArrayList arrayList, HashMap hashMap) {
 		this.client = client;
@@ -34,7 +35,7 @@ public class Connection implements Runnable
 			
 			username += fromClient.readLine();
 			System.out.println("raw: " + username);
-			String statusCode = this.join(username);
+			String statusCode = this.parse(username, fromClient);
 			fromClient.readLine();
 			
 			printWriter = new PrintWriter(this.client.getOutputStream());
@@ -50,10 +51,14 @@ public class Connection implements Runnable
 			while(true) {
 				if (j) {
 					messages.add(username);
-					j= false;
+					j = false;
 				}
 				String line = fromClient.readLine();
-				messages.add(line);
+				String status = parse(line, fromClient);
+				if (this.broadcast) {
+					messages.add(line);
+				}
+				this.broadcast = true;
 				// System.out.println(line);
 				// System.out.println(messages);
 			}
@@ -81,8 +86,9 @@ public class Connection implements Runnable
 		return returnValue;
 	}
 	
-	public String join(String raw) throws IOException {
+	public String parse(String raw, BufferedReader br) throws IOException {
 		String[] delims = raw.split("\\|");
+		PrintWriter printer = null;
 		try {
 			if (delims[0].equals("JOIN")) {
 				if (delims[1].length() <= 15) {
@@ -95,12 +101,36 @@ public class Connection implements Runnable
 				}
 				else {return "STAT|420";}
 			}
+			else if (delims[0].equals("PVMG")) {
+				String message = br.readLine();
+				String toWho = delims[2];
+				if (this.usernameDictionary.containsKey(toWho)) {
+					printer = new PrintWriter(this.usernameDictionary.get(toWho));
+					printer.println(raw);
+					printer.flush();
+					printer.println(message);
+					printer.flush();
+					this.broadcast = false;
+				}
+				else{return "STAT|421";}
+			}
 			else {return "STAT|400";}
 
 		} catch (IOException ioe) {
-			System.out.println(ioe);
+			System.err.println(ioe);
 			return "STAT|400";
 		}
+		return "STAT|400";
 	}
+
+	// public Boolean pm(String header) throws IOException {
+	// 	String[] delims = header.split("\\|");
+	// 	try {
+	// 		if (delims[0].equals("PVMG")){
+	// 			String message = fromClient.readLine();
+				
+	// 		}
+	// 	}
+	// }catch (IOException ioe) {System.err.println(ioe);}
 }
 
