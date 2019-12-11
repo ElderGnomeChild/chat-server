@@ -119,20 +119,12 @@ public class ChatClient
 				}
 			}
 			else if (statusCodeNumber == 420) {
-				if (userName.length() > 15) {
-					System.out.println("\r\nSorry, your username must be 15 characters or fewer! \r\nPlease try again!");
-				}
-				else {
-					System.out.println("\r\nSorry the username \"" + userName + "\" is already taken! \r\nPlease try again!");
-				}
+				if (userName.length() > 15) {System.out.println("\r\nSorry, your username must be 15 characters or fewer! \r\nPlease try again!");}
+				else {System.out.println("\r\nSorry the username \"" + userName + "\" is already taken! \r\nPlease try again!");}
 			}
-			else {
-				System.out.println("We have no clue what happened. Please contact server owner.");
-			}
+			else {System.out.println("We have no clue what happened. Please contact server owner.");}
 		}
-		catch (IOException ioe) {
-			System.err.println(ioe);
-		}
+		catch (IOException ioe) {System.err.println(ioe);}
 		finally {
 			if (localBin != null)
 				localBin.close();
