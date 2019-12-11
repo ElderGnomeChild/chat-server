@@ -108,14 +108,21 @@ public class ChatClient
 				exec.execute(reader);
 				
 				boolean isLeaving = false;
+				boolean properSpacing = true;
 				while (!isLeaving) {
 					String line2 = localBin.readLine();
 					String line = "";
 					Character at = '@';
 					if (line2.length() < 513){
 						if (at.equals(line2.charAt(0))){
-							String destinationUser = line2.substring(1, line2.indexOf(" "));
-							line = privateMessage(userName, destinationUser);
+							if (line2.contains(" ")) {
+								String destinationUser = line2.substring(1, line2.indexOf(" "));
+								line = privateMessage(userName, destinationUser);
+							}
+							else {
+								System.out.println("You need to add a space before your message.🤦‍♂️");
+								properSpacing = false;
+							}
 						}
 						else {line = broadcast(userName);}
 						if (line2.equals(".")){
@@ -124,8 +131,11 @@ public class ChatClient
 							networkPout.println(line);
 						}
 						else {
-							networkPout.println(line);
-							networkPout.println(line2);
+							if (properSpacing){
+								networkPout.println(line);
+								networkPout.println(line2);
+							}
+							properSpacing = true;
 						}
 					}
 					else {
