@@ -59,12 +59,11 @@ public class Connection implements Runnable
 					status = parse(line, fromClient);
 				}
 				
-				if (status.length() > 0) {	
+				if (status.length() > 0 && !status.equals("leaving")) {	
 					printWriter.println(status);
 					System.out.println("status:: " +status);
 					printWriter.flush();
 				}
-
 
 				if (this.broadcast) {
 					System.out.println("line: "+line);
@@ -73,6 +72,16 @@ public class Connection implements Runnable
 				this.broadcast = true;
 				// System.out.println(line);
 				// System.out.println(messages);
+
+				if (status.equals("leaving")) {
+					if (fromClient != null)
+					fromClient.close();
+					if (printWriter != null)
+					printWriter.close();
+					if (client != null)
+					client.close();
+					break;
+				}
 			}
 		}
 		catch (IOException ioe) {
@@ -128,13 +137,14 @@ public class Connection implements Runnable
 				else{return "STAT|421";}
 			}
 			else if (delims[0].equals("BDMG")) {
-				// String toWho = delims[1];
-				// if (this.usernameDictionary.containsKey(toWho)) {
-				// 	printer = new PrintWriter(this.usernameDictionary.get(toWho));
-				// 	printer.println("STAT|200");
-				// 	printer.flush();
-				// }
 				return "STAT|200";
+			}
+			else if (delims[0].equals("LEAV")) {
+				String who = delims[1];
+				OutputStream stream = this.usernameDictionary.get(who);
+				this.outputStreams.remove(stream);
+				this.usernameDictionary.remove(who);
+				return "leaving";
 			}
 			else {return "STAT|666";}
 
