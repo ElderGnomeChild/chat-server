@@ -46,17 +46,21 @@ public class ReaderThread implements Runnable
 					String line = fromServer.readLine();
 					String msg = line.substring(line.indexOf(" ") + 1);
 
-					return delims[1] + "(private): " + msg;
+					return delims[1] + "(private)🍑 : " + msg;
 					} catch(IOException ioe) { System.out.println(ioe); }
 			}
 			else if (delims[0].equals("STAT")) {
 				if (delims[1].equals("421")) {
-					System.out.println("Sorry lad, that username doesn't exist.");
+					return "Sorry lad, that username doesn't exist.";
+
 				}
 				else if (!delims[1].equals("200")) {
-					System.out.println("Oopsy. Your message was lost champ.");
+					return "Oopsy. Your message was lost champ.🤷‍♂️";
 				}
 				return "👍";
+			}
+			else if (delims[0].equals("LEAV")) {
+				return delims[1] + " has left the chat.👋";
 			}
 			return message;}
 		else {return message;}

@@ -41,6 +41,16 @@ public class ChatClient
 		Date date = new Date();
 		return "PVMG|" + name + "|" + destination + "|" + parseDate(date);
 	}
+	
+	private static String leave(String name) {
+		Date date = new Date();
+		return "LEAV|" + name + "|all|" + parseDate(date);
+	}
+
+	private static String join(String name) {
+		Date date = new Date();
+		return "JOIN|" + name + "|all|" + parseDate(date) + "\r\n" + name + "\r\n";
+	}
 
 	private static String retrieveUsername() throws IOException {
 		try {
@@ -87,10 +97,7 @@ public class ChatClient
 					stupidUserName = false;
 				}
 			}
-			String joinString = "JOIN|" + userName + "|all|" + parseDate(date) + "\r\n" + userName + "\r\n";
-			networkPout.println(joinString);
-			
-			
+			networkPout.println(join(userName));
 			listeningForStatusCode = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 			String statusCode = listeningForStatusCode.readLine();
 			int statusCodeNumber = parseStatusCode(statusCode);
@@ -110,8 +117,12 @@ public class ChatClient
 						line = privateMessage(userName, destinationUser);
 					}
 					else {line = broadcast(userName);}
-					if (line2.equals("."))
+					if (line2.equals(".")){
+						System.out.println("here?");
 						isLeaving = true;
+						line = leave(userName);
+						networkPout.println(line);
+					}
 					else {
 						networkPout.println(line);
 						networkPout.println(line2);
