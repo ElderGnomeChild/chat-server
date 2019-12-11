@@ -19,7 +19,7 @@ public class BroadcastThread implements Runnable {
         while (true) {
                 if (!messages.isEmpty()){
                     String message = messages.remove(0);
-                    System.out.println(message);
+                    System.out.println("(Broadcast Thread)" + message);
 
 
                     for(OutputStream stream : outputStreams) {

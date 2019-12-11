@@ -54,8 +54,20 @@ public class Connection implements Runnable
 					j = false;
 				}
 				String line = fromClient.readLine();
-				String status = parse(line, fromClient);
+				String status = "";
+				if (line.contains("|")){
+					status = parse(line, fromClient);
+				}
+				
+				if (status.length() > 0) {	
+					printWriter.println(status);
+					System.out.println("status:: " +status);
+					printWriter.flush();
+				}
+
+
 				if (this.broadcast) {
+					System.out.println("line: "+line);
 					messages.add(line);
 				}
 				this.broadcast = true;
@@ -111,16 +123,25 @@ public class Connection implements Runnable
 					printer.println(message);
 					printer.flush();
 					this.broadcast = false;
+					return "STAT|200";
 				}
 				else{return "STAT|421";}
 			}
-			else {return "STAT|400";}
+			else if (delims[0].equals("BDMG")) {
+				// String toWho = delims[1];
+				// if (this.usernameDictionary.containsKey(toWho)) {
+				// 	printer = new PrintWriter(this.usernameDictionary.get(toWho));
+				// 	printer.println("STAT|200");
+				// 	printer.flush();
+				// }
+				return "STAT|200";
+			}
+			else {return "STAT|666";}
 
 		} catch (IOException ioe) {
 			System.err.println(ioe);
 			return "STAT|400";
 		}
-		return "STAT|400";
 	}
 
 	// public Boolean pm(String header) throws IOException {
