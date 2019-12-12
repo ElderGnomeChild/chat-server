@@ -1,5 +1,10 @@
 /**
  * @author - Daniel Lier and Preston McIllece.
+ * 
+ * 
+ * Connection is an instance of a Client-Server connection.
+ * Chatserver forwards its socket connections here for multithreading purposes
+ * Public messages are forwarded to the broadcast thread and private messages are sent directly to other clients from here.
  */
 
 import java.net.*;
@@ -18,7 +23,7 @@ public class Connection implements Runnable
 	private boolean broadcast = true;
 	
 	public Connection(Socket client, Vector vector, ArrayList arrayList, HashMap hashMap) {
-		this.client = client;
+		this.client = client;			//inherit socket, vector, arraylist, and hashmap from ChatServer
 		this.username = "";
 		this.messages = vector;
 		this.outputStreams = arrayList;
@@ -33,40 +38,45 @@ public class Connection implements Runnable
 		try {
 			fromClient = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			
-			username += fromClient.readLine();
-			String statusCode = this.parse(username, fromClient);
+			username += fromClient.readLine();								//receive a join with declaration of username from client
+			String statusCode = this.parse(username, fromClient);			//get the status code of that join, 200 if good and 420 if bad (already taken)
 			fromClient.readLine();
 			
-			printWriter = new PrintWriter(this.client.getOutputStream());
-			printWriter.println(statusCode);
+			printWriter = new PrintWriter(this.client.getOutputStream());	
+			printWriter.println(statusCode);								//send the status code back to the client
 			printWriter.flush();
 			boolean joinMessage = true;
 
-			if (!statusCode.equals("STAT|200")) {
+			if (!statusCode.equals("STAT|200")) {							//if bad username, close connection
 				client.close();
-				joinMessage=false;
+				joinMessage=false;											//do not send the join to the broadcast thread if bad status code
 			}
 		
+
+			String line;
+			String status;
+
+
 			while(true) {
-				if (joinMessage) {
+				if (joinMessage) {											//add the join message to broadcast thread
 					messages.add(username);
-					joinMessage = false;
+					joinMessage = false;									//do not send joins again
 				}
-				String line = fromClient.readLine();
-				String status = "";
+				line = fromClient.readLine();								//read a line from client
+				status = "";
 				if (line.contains("|")){
-					status = parse(line, fromClient);
+					status = parse(line, fromClient);						//if it's a header, get a status code
 				}
 				
-				if (status.length() > 0 && !status.equals("leaving")) {	
+				if (status.length() > 0 && !status.equals("leaving")) {		//on a "LEAV", send the status code back to the client
 					printWriter.println(status);
 					printWriter.flush();
 				}
 
 				if (this.broadcast) {
-					messages.add(line);
+					messages.add(line);										//add messages to the broadcast thread
 				}
-				this.broadcast = true;
+				this.broadcast = true;										//reset the broadcast variable for the next loop
 
 				if (status.equals("leaving")) {
 					if (fromClient != null)
@@ -103,12 +113,12 @@ public class Connection implements Runnable
 	}
 	
 	public String parse(String raw, BufferedReader br) throws IOException {
-		String[] delims = raw.split("\\|");
+		String[] delims = raw.split("\\|");									//slice the header into strings on the | character
 		PrintWriter printer = null;
 		try {
 			if (delims[0].equals("JOIN")) {
-				if (delims[1].length() <= 15) {
-					if (this.usernameDictionary.putIfAbsent(delims[1], this.client.getOutputStream()) == null) {
+				if (delims[1].length() <= 15) {								
+					if (this.usernameDictionary.putIfAbsent(delims[1], this.client.getOutputStream()) == null) { //check for valid username and be sure that it does not already exist
 						this.username = delims[1];
 						this.outputStreams.add(this.client.getOutputStream());
 						return "STAT|200";
@@ -122,14 +132,14 @@ public class Connection implements Runnable
 					return "STAT|420";
 				}
 			}
-			else if (delims[0].equals("PVMG")) {
-				String message = br.readLine();
-				String toWho = delims[2];
+			else if (delims[0].equals("PVMG")) {							
+				String message = br.readLine();								//get contents of private message
+				String toWho = delims[2];									//get the recipient of the private message
 				if (this.usernameDictionary.containsKey(toWho)) {
-					printer = new PrintWriter(this.usernameDictionary.get(toWho));
-					printer.println(raw);
+					printer = new PrintWriter(this.usernameDictionary.get(toWho));	//get the output stream of the recipient
+					printer.println(raw);									//send the header to the recipient
 					printer.flush();
-					printer.println(message);
+					printer.println(message);								//send the message contents to the recipient
 					printer.flush();
 					this.broadcast = false;
 					return "STAT|200";
@@ -140,10 +150,10 @@ public class Connection implements Runnable
 				return "STAT|200";
 			}
 			else if (delims[0].equals("LEAV")) {
-				String who = delims[1];
-				OutputStream stream = this.usernameDictionary.get(who);
-				this.outputStreams.remove(stream);
-				this.usernameDictionary.remove(who);
+				String who = delims[1];										//get username of person leaving
+				OutputStream stream = this.usernameDictionary.get(who);		//get output stream of person leaving
+				this.outputStreams.remove(stream);							//remove stream from the broadcast thread arraylist
+				this.usernameDictionary.remove(who);						//remove <username, stream> from the private message hashmap
 				return "leaving";
 			}
 			else {return "STAT|666";}
@@ -153,15 +163,5 @@ public class Connection implements Runnable
 			return "STAT|400";
 		}
 	}
-
-	// public Boolean pm(String header) throws IOException {
-	// 	String[] delims = header.split("\\|");
-	// 	try {
-	// 		if (delims[0].equals("PVMG")){
-	// 			String message = fromClient.readLine();
-				
-	// 		}
-	// 	}
-	// }catch (IOException ioe) {System.err.println(ioe);}
 }
 

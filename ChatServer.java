@@ -1,5 +1,7 @@
 /**
  * @author - Daniel Lier and Preston McIllece.
+ * 
+ * Multithreaded server that recieves ChatClients and forwards their socket connections to an instance of Connection
  */
 
 import java.net.*;
@@ -16,21 +18,21 @@ public class ChatServer
 
     // construct a thread pool for concurrency	
 	private static final Executor exec = Executors.newCachedThreadPool();
-	public static Vector messages = new Vector<String>();
-	public static ArrayList outputStreams = new ArrayList<OutputStream>();
-	public static BroadcastThread broadcastThread = new BroadcastThread(messages, outputStreams);
-	public static HashMap<String, OutputStream> usernameDictionary = new HashMap<>(50);
+	public static Vector messages = new Vector<String>();					//vector to handle messages in the brodcast thread
+	public static ArrayList outputStreams = new ArrayList<OutputStream>();	//arraylist of output streams for the broadcast thread to send messages to 
+	public static BroadcastThread broadcastThread = new BroadcastThread(messages, outputStreams); 	//broadcast thread for sending public messages
+	public static HashMap<String, OutputStream> usernameDictionary = new HashMap<>(50);				//hashmap of usernames and output streams for private messages
 
 	public static void main(String[] args) throws IOException {
 		ServerSocket sock = null;
 		
 		try {
 			// establish the socket
-			sock = new ServerSocket(DEFAULT_PORT);
+			sock = new ServerSocket(DEFAULT_PORT);				//open the socket
 			
 			exec.execute(broadcastThread);
 			while (true) {
-				Connection task = new Connection(sock.accept(), messages, outputStreams, usernameDictionary);
+				Connection task = new Connection(sock.accept(), messages, outputStreams, usernameDictionary);		//accept client connections to the socket
 				exec.execute(task);
 			}
 		}
