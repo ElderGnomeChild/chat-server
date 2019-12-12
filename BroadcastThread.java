@@ -1,5 +1,9 @@
+
 /**
  * @author - Daniel Lier and Preston McIllece.
+ * 
+ * This class handles taking broadcast messages from the server and sending them to every client in the chatroom.
+ * Specifically, the messages are sent to ReaderThread to then be parsed and displayed to the user.
  */
 
 import java.io.IOException;
@@ -20,23 +24,25 @@ public class BroadcastThread implements Runnable {
     public void process() {
         PrintWriter pw = null;
         while (true) {
-                if (!messages.isEmpty()){
-                    String message = messages.remove(0);
-
-                    for(OutputStream stream : outputStreams) {
-                        pw = new PrintWriter(stream);
-                        pw.println(message);
-                        pw.flush();
-                    }
+            if (!messages.isEmpty()) {
+                String message = messages.remove(0);
+                for (OutputStream stream : outputStreams) {
+                    pw = new PrintWriter(stream);
+                    pw.println(message);
+                    pw.flush();
                 }
+            }
         }
     }
 
     public void run() {
         while (true) {
             // sleep for 1/10th of a second
-            try { Thread.sleep(100); } catch (InterruptedException ignore) { }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignore) {
+            }
             this.process();
         }
     }
-} 
+}

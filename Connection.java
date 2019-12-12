@@ -106,12 +106,6 @@ public class Connection implements Runnable
 		}
 	}
 	
-	public String toString() {
-		String clientString = this.client.toString();
-		String returnValue = clientString.concat(this.username);
-		return returnValue;
-	}
-	
 	public String parse(String raw, BufferedReader br) throws IOException {
 		String[] delims = raw.split("\\|");									//slice the header into strings on the | character
 		PrintWriter printer = null;
