@@ -51,7 +51,7 @@ public class ReaderThread implements Runnable
 			}
 			else if (delims[0].equals("STAT")) {
 				if (delims[1].equals("421")) {
-					return "Sorry lad, that username doesn't exist.";
+					return "Sorry man, that username isn't in the chat right now.";
 
 				}
 				else if (!delims[1].equals("200")) {

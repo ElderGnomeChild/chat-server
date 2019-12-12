@@ -40,16 +40,17 @@ public class Connection implements Runnable
 			printWriter = new PrintWriter(this.client.getOutputStream());
 			printWriter.println(statusCode);
 			printWriter.flush();
+			boolean joinMessage = true;
 
 			if (!statusCode.equals("STAT|200")) {
 				client.close();
+				joinMessage=false;
 			}
-			
-			boolean j = true;
+		
 			while(true) {
-				if (j) {
+				if (joinMessage) {
 					messages.add(username);
-					j = false;
+					joinMessage = false;
 				}
 				String line = fromClient.readLine();
 				String status = "";
@@ -112,9 +113,14 @@ public class Connection implements Runnable
 						this.outputStreams.add(this.client.getOutputStream());
 						return "STAT|200";
 					}
-					else {return "STAT|420";}
+					else {
+						this.broadcast = false;
+						return "STAT|420";}
 				}
-				else {return "STAT|420";}
+				else {
+					this.broadcast = false;
+					return "STAT|420";
+				}
 			}
 			else if (delims[0].equals("PVMG")) {
 				String message = br.readLine();

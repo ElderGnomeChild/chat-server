@@ -1,3 +1,7 @@
+/**
+ * @author - Daniel Lier and Preston McIllece.
+ */
+
 import java.io.IOException;
 import java.io.*;
 import java.io.PrintWriter;
