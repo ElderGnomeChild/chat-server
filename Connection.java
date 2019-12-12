@@ -127,6 +127,7 @@ public class Connection implements Runnable
 				}
 			}
 			else if (delims[0].equals("PVMG")) {							
+				this.broadcast = false;
 				String message = br.readLine();								//get contents of private message
 				String toWho = delims[2];									//get the recipient of the private message
 				if (this.usernameDictionary.containsKey(toWho)) {
@@ -135,7 +136,6 @@ public class Connection implements Runnable
 					printer.flush();
 					printer.println(message);								//send the message contents to the recipient
 					printer.flush();
-					this.broadcast = false;
 					return "STAT|200";
 				}
 				else{return "STAT|421";}
